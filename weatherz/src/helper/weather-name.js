@@ -1,4 +1,4 @@
-// fungsi untuk mengubag deskripsi cuaca dari api ke bahasa indonesia
+// fungsi untuk mengubah deskripsi cuaca dari api ke bahasa indonesia
 export const weatherName = (name) => {
   let result;
   switch (name) {

@@ -4,18 +4,20 @@ import { weatherName } from "../../helper/weather-name";
 import { weatherIcon } from "../../helper/weather-icon";
 import { alertError } from "../alerts/SweetAlert";
 import { MainCardSkeleton } from "../skeleton/CardSkeleton";
+import { convertKelvinToCelcius } from "../../helper/tempConverter";
 
 export default function MainCard({ citySaved }) {
-  const [weatherData, setWeatherData] = useState(null); // data dari api
-  const [city, setCity] = useState(null);
+  const [weatherData, setWeatherData] = useState(null); // data cuaca hari ini
+  const [city, setCity] = useState(null); // data city yang dipilih dari search bar
+  // data untuk kota yang disimpan
   const [name, setName] = useState(null);
   const [temp, setTemp] = useState(null);
   const [tempMax, setTempMax] = useState(null);
   const [tempMin, setTempMin] = useState(null);
   const [desc, setDesc] = useState(null);
   const [humidity, setHumidity] = useState(null);
-  const [loading, setLoading] = useState(true); // state loading data
-  const [error, setError] = useState(null); // state error
+  const [loading, setLoading] = useState(true); // flag loading data
+  const [error, setError] = useState(null); // flag error
 
   const API_KEY = "35ce8f528122778e74a1c0a286b1db2d";
 
@@ -60,13 +62,15 @@ export default function MainCard({ citySaved }) {
     }
   };
 
-  // fetch datat cuaca ke api open weather
+  // fetch data cuaca (hari ini)
   const fetchWeatherDataByCoords = async (latitude, longitude) => {
     try {
       const response = await axios.get(
+        // endpoint weather
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
       );
       setWeatherData(response.data);
+      // save data default
       sessionStorage.setItem("saved-city", 1);
       sessionStorage.setItem(
         `kota-default`,
@@ -80,6 +84,7 @@ export default function MainCard({ citySaved }) {
         response.data.weather[0].description
       );
       sessionStorage.setItem(`default-humid`, response.data.main.humidity);
+      // handle flag
       setError(null);
       setLoading(false);
     } catch (error) {
@@ -89,14 +94,10 @@ export default function MainCard({ citySaved }) {
     }
   };
 
-  // konversi nilai default (kelvin) ke celcius
-  const convertKelvinToCelcius = (kelvin) => {
-    return Math.round(kelvin - 273.15);
-  };
-
   useEffect(() => {
     // get lokasi user saat halaman pertama dirender
     getLocation();
+    // ganti data cuaca dari kota yang disimpan
     if (citySaved) {
       const lowercaseCity = citySaved.toLowerCase();
       setCity(lowercaseCity);
@@ -110,7 +111,7 @@ export default function MainCard({ citySaved }) {
         setCity(lowercaseCity);
       }
     }
-  }, [city, citySaved]);
+  }, [city, citySaved]); // render ulang komponen setiap data ini berubah
 
   return (
     <div>

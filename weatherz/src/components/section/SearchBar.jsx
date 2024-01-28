@@ -2,34 +2,41 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { weatherName } from "../../helper/weather-name";
 import { weatherIcon } from "../../helper/weather-icon";
+import { toastSuccess, toastWarning } from "../alerts/SweetAlert";
+import { convertKelvinToCelcius } from "../../helper/tempConverter";
 
 export default function SearchBar({ saved }) {
-  const [savedCities, setSavedCities] = useState([]);
-  const [count, setCount] = useState(0);
-  const [city, setCity] = useState("");
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [hideSave, setHideSave] = useState(false);
+  const [savedCities, setSavedCities] = useState([]); // data kota yang disimpan
+  const [count, setCount] = useState(0); // untuk trigger render komponen
+  const [city, setCity] = useState(""); // nama kota yang dicari
+  const [data, setData] = useState(null); // data kota yang dicari
+  const [error, setError] = useState(null); // flag error
+  const [loading, setLoading] = useState(true); // flag loading
+  const [hideSave, setHideSave] = useState(false); // flag hide button
   const API_KEY = "35ce8f528122778e74a1c0a286b1db2d";
 
+  // fetch data cuaca hari ini dari kota yang dicari
   const fetchWeatherData = async () => {
     try {
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`
       );
       setData(response.data);
+      // handle flag
       setLoading(false);
       setHideSave(false);
       setError(null);
     } catch (error) {
       setLoading(false);
       setHideSave(true);
+      toastWarning("Kota tidak ditemukan");
       setError("Data cuaca tidak tersedia");
     }
   };
 
+  // jika kota disimpan, maka...
   const handleSave = () => {
+    // save data
     const savedCity = sessionStorage.getItem("saved-city");
     sessionStorage.setItem("saved-city", parseInt(savedCity) + 1);
     sessionStorage.setItem(`kota-${city}`, data.name);
@@ -38,12 +45,8 @@ export default function SearchBar({ saved }) {
     sessionStorage.setItem(`${city}-temp-min`, data.main.temp_min);
     sessionStorage.setItem(`${city}-desc`, data.weather[0].description);
     sessionStorage.setItem(`${city}-humid`, data.main.humidity);
-    setCount(count + 1);
-  };
-
-  // konversi nilai default (kelvin) ke celcius
-  const convertKelvinToCelcius = (kelvin) => {
-    return Math.round(kelvin - 273.15);
+    setCount(count + 1); // trigger render
+    toastSuccess("Kota berhasil disimpan", "");
   };
 
   const handleSubmit = (event) => {
@@ -52,12 +55,14 @@ export default function SearchBar({ saved }) {
   };
 
   useEffect(() => {
+    // saat komponen pertama kali dirender, ambil data nama-nama kota yang disimpan
     const savedCityKeys = Object.keys(sessionStorage).filter((key) =>
       key.startsWith("kota-")
     );
+    // dan juga jumlah kota yang disimpan
     const cities = savedCityKeys.map((key) => sessionStorage.getItem(key));
     setSavedCities(cities);
-  }, [count]);
+  }, [count]); // render ulang setiap count berubah
 
   return (
     <div className="row mt-4">

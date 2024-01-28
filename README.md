@@ -27,4 +27,9 @@ If you want to contribute in this web app, just following this steps :
 5. Push to your branch
 6. Create new request pull
 
+## Notes
+
+Because OpenWeatherMap does not provide an Endpoint forecast API that accepts city parameters. So for now the weather forecast data for the next 5 days will display data from the user's location by default and is not affected by the selected saved city.
+Google's geoencoding API (paid) is required to convert city names into coordinates that the Endpoint forecast API can accept.
+
 Thank you!
