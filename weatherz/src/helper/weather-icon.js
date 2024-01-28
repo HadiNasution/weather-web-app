@@ -1,3 +1,4 @@
+// fungsi untuk mengubah icon cuaca berdasarkan kondisi cuaca
 export const weatherIcon = (name) => {
   let result;
   switch (name) {
@@ -48,6 +49,12 @@ export const weatherIcon = (name) => {
       break;
     case "rain":
       result = "public/assets/hujan.png";
+      break;
+    case "moderate rain":
+      result = "public/assets/hujan.png";
+      break;
+    case "light rain":
+      result = "public/assets/hujan-terang.png";
       break;
     case "drizzle":
       result = "public/assets/hujan.png";

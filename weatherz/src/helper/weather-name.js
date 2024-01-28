@@ -1,3 +1,4 @@
+// fungsi untuk mengubag deskripsi cuaca dari api ke bahasa indonesia
 export const weatherName = (name) => {
   let result;
   switch (name) {
@@ -48,6 +49,12 @@ export const weatherName = (name) => {
       break;
     case "rain":
       result = "Hujan";
+      break;
+    case "moderate rain":
+      result = "Hujan Sedang";
+      break;
+    case "light rain":
+      result = "Gerimis";
       break;
     case "drizzle":
       result = "Gerimis";
