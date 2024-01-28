@@ -74,8 +74,14 @@ export const weatherName = (name) => {
     case "hail":
       result = "Hujan Es";
       break;
+    case "thunderstorm with rain":
+      result = "Hujan Petir";
+      break;
+    case "thunderstorm with light rain":
+      result = "Hujan Petir";
+      break;
     default:
-      result = "Loading...";
+      result = name;
       break;
   }
   return result;

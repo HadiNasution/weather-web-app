@@ -2,12 +2,18 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { weatherName } from "../../helper/weather-name";
 import { weatherIcon } from "../../helper/weather-icon";
-import { weatherBackground } from "../../helper/weather-background";
 import { alertError } from "../alerts/SweetAlert";
 import { MainCardSkeleton } from "../skeleton/CardSkeleton";
 
-export default function MainCard() {
+export default function MainCard({ citySearched }) {
   const [weatherData, setWeatherData] = useState(null); // data dari api
+  const [city, setCity] = useState(citySearched);
+  const [name, setName] = useState(null);
+  const [temp, setTemp] = useState(null);
+  const [tempMax, setTempMax] = useState(null);
+  const [tempMin, setTempMin] = useState(null);
+  const [desc, setDesc] = useState(null);
+  const [humidity, setHumidity] = useState(null);
   const [loading, setLoading] = useState(true); // state loading data
   const [error, setError] = useState(null); // state error
 
@@ -18,8 +24,15 @@ export default function MainCard() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          // jika koordinat berhasil didapatkan, maka fetch data
           fetchWeatherDataByCoords(
             position.coords.latitude,
+            position.coords.longitude
+          );
+          // simpan koordinat untuk child lain
+          sessionStorage.setItem("default-latitude", position.coords.latitude);
+          sessionStorage.setItem(
+            "default-longitude",
             position.coords.longitude
           );
         },
@@ -71,32 +84,40 @@ export default function MainCard() {
   useEffect(() => {
     // get lokasi user saat halaman pertama dirender
     getLocation();
-  }, []);
+    setCity(citySearched);
+    setName(sessionStorage.getItem(city));
+    setTemp(sessionStorage.getItem(`${city}-temp`));
+    setTempMax(sessionStorage.getItem(`${city}-temp-max`));
+    setTempMin(sessionStorage.getItem(`${city}-temp-min`));
+    setDesc(sessionStorage.getItem(`${city}-desc`));
+    setHumidity(sessionStorage.getItem(`${city}-humid`));
+    if (city !== citySearched) {
+      setCity(citySearched);
+    }
+  }, [city, citySearched]);
 
   return (
     <div>
       {loading ? (
         <MainCardSkeleton />
       ) : (
-        <div className="row">
+        <div className="row mt-4">
           <div className="col-md">
-            <div
-              className="card d-flex align-items-center text-center p-5"
-              style={{
-                background:
-                  "linear-gradient(355deg, rgba(229,242,255,1) 0%, rgba(145,201,255,1) 37%, rgba(29,144,255,1) 94%)",
-              }}
-            >
+            <div className="card d-flex align-items-center text-center p-5">
               <div className="d-inline">
-                <h2 className="fs-1 fw-bold">{weatherData.name}</h2>
+                <h2 className="fs-1 fw-bold">{name || weatherData.name}</h2>
                 <p className="fs-4">
-                  {weatherName(weatherData.weather[0].description)}
+                  {new Date().getDate()}{" "}
+                  {new Date().toLocaleDateString("id-ID", {
+                    weekday: "long",
+                  })}{" "}
+                  • {weatherName(desc || weatherData.weather[0].description)}
                 </p>
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 <img
                   className="me-4"
-                  src={weatherIcon(weatherData.weather[0].description)}
+                  src={weatherIcon(desc || weatherData.weather[0].description)}
                   alt="illustrasi cuaca"
                   width={200}
                   height={200}
@@ -104,18 +125,22 @@ export default function MainCard() {
                 <div className="d-inline text-start">
                   <h2>
                     <strong>
-                      {convertKelvinToCelcius(weatherData.main.temp)}
+                      {convertKelvinToCelcius(temp || weatherData.main.temp)}
                     </strong>
                     &deg;<span className="fs-5">C</span>
                   </h2>
                   <h5 className="fs-5">
                     <span className="text-success m-1">
-                      {convertKelvinToCelcius(weatherData.main.temp_min)}
+                      {convertKelvinToCelcius(
+                        tempMin || weatherData.main.temp_min
+                      )}
                       &deg;
                     </span>
                     /
                     <span className="text-danger m-1">
-                      {convertKelvinToCelcius(weatherData.main.temp_max)}
+                      {convertKelvinToCelcius(
+                        tempMax || weatherData.main.temp_max
+                      )}
                       &deg;
                     </span>
                   </h5>
@@ -123,7 +148,7 @@ export default function MainCard() {
                     Kelembapan :{" "}
                     <span className="fw-bold">
                       {" "}
-                      {weatherData.main.humidity}%
+                      {humidity || weatherData.main.humidity}%
                     </span>
                   </p>
                 </div>

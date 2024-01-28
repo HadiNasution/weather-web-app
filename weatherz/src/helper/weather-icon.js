@@ -74,6 +74,12 @@ export const weatherIcon = (name) => {
     case "hail":
       result = "public/assets/salju.png";
       break;
+    case "thunderstorm with rain":
+      result = "public/assets/hujan-petir.png";
+      break;
+    case "thunderstorm with light rain":
+      result = "public/assets/hujan-petir.png";
+      break;
     default:
       result = "public/assets/cerah.png";
       break;

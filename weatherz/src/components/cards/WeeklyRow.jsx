@@ -1,49 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { alertError } from "../alerts/SweetAlert";
 import { DailyCardSkeleton } from "../skeleton/CardSkeleton";
-import DailyCard from "./DailyCard";
+import { weatherName } from "../../helper/weather-name";
+import { weatherIcon } from "../../helper/weather-icon";
 
-export default function WeeklyRow(latitude, longitude) {
+export default function WeeklyRow() {
   const [forecastData, setForecastData] = useState(null);
   const [loading, setLoading] = useState(true); // state loading data
   const [error, setError] = useState(null); // state error
+  const [defaultLatitude, setDefaultLatitude] = useState(0);
+  const [defaultLongitude, setDefaultLongitude] = useState(0);
 
   const API_KEY = "35ce8f528122778e74a1c0a286b1db2d";
-
-  // get geolokasi dari perangkat user
-  const getLocation = async () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          fetchForecastData(
-            position.coords.latitude,
-            position.coords.longitude
-          );
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          alertError(
-            "Gagal mendapatkan lokasi",
-            "Pastikan perizinan lokasi sudah diizinkan."
-          );
-          setWeatherData(null);
-          setError(
-            "Gagal mendapatkan data cuaca, pastikan izin lokasi sudah dicentang"
-          );
-        },
-        { enableHighAccuracy: true }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-      alertError(
-        "Gagal mendapatkan lokasi",
-        "Browser tidak mendukung fitur geolokasi."
-      );
-      setWeatherData(null);
-      setError("Gagal mendapatkan data cuaca");
-    }
-  };
 
   // fetch datat cuaca ke api open weather
   const fetchForecastData = async (latitude, longitude) => {
@@ -63,6 +31,16 @@ export default function WeeklyRow(latitude, longitude) {
       setError("Failed to fetch forecast data");
     }
   };
+
+  const convertKelvinToCelcius = (kelvin) => {
+    return Math.round(kelvin - 273.15);
+  };
+
+  useEffect(() => {
+    setDefaultLatitude(sessionStorage.getItem("default-latitude"));
+    setDefaultLongitude(sessionStorage.getItem("default-longitude"));
+    fetchForecastData(defaultLatitude, defaultLongitude);
+  }, []);
 
   // ekstrak hanya data cuaca perhari yang diambil
   const getDailyForecast = (forecastList) => {
@@ -89,11 +67,6 @@ export default function WeeklyRow(latitude, longitude) {
     return Object.values(dailyForecast);
   };
 
-  useEffect(() => {
-    // get lokasi user saat halaman pertama dirender
-    getLocation();
-  }, []);
-
   return (
     <>
       {loading ? (
@@ -115,7 +88,47 @@ export default function WeeklyRow(latitude, longitude) {
           </div>
         </div>
       ) : (
-        <DailyCard forecastData={forecastData} />
+        <div className="row mt-3 mb-5">
+          {forecastData && Array.isArray(forecastData) ? (
+            forecastData.map((day) => (
+              <div className="col-md" key={day.dt}>
+                <div className="card d-flex align-items-start text-start p-3">
+                  <div className="d-inline">
+                    <h2 className="fs-3 fw-bold">
+                      {new Date(day.dt * 1000).toLocaleDateString("id-ID", {
+                        weekday: "long",
+                      })}
+                    </h2>
+                    <p className="fs-4">
+                      {weatherName(day.weather[0].description)}
+                    </p>
+                  </div>
+                  <div className="d-flex align-items-center justify-content-center">
+                    <img
+                      className="me-4"
+                      src={weatherIcon(day.weather[0].description)}
+                      alt="illustrasi cuaca"
+                      width={80}
+                      height={80}
+                    />
+                    <div className="d-inline text-start">
+                      <h2>
+                        <strong>{convertKelvinToCelcius(day.main.temp)}</strong>
+                        &deg;<span className="fs-5">C</span>
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>
+              {forecastData
+                ? "Invalid forecast data"
+                : "Loading forecast data..."}
+            </p>
+          )}
+        </div>
       )}
       {error && <p>{error}</p>}
     </>
