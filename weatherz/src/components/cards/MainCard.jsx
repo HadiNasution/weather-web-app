@@ -5,9 +5,9 @@ import { weatherIcon } from "../../helper/weather-icon";
 import { alertError } from "../alerts/SweetAlert";
 import { MainCardSkeleton } from "../skeleton/CardSkeleton";
 
-export default function MainCard({ citySearched }) {
+export default function MainCard({ citySaved }) {
   const [weatherData, setWeatherData] = useState(null); // data dari api
-  const [city, setCity] = useState(citySearched);
+  const [city, setCity] = useState(null);
   const [name, setName] = useState(null);
   const [temp, setTemp] = useState(null);
   const [tempMax, setTempMax] = useState(null);
@@ -67,6 +67,19 @@ export default function MainCard({ citySearched }) {
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
       );
       setWeatherData(response.data);
+      sessionStorage.setItem("saved-city", 1);
+      sessionStorage.setItem(
+        `kota-default`,
+        `${response.data.name} (Lokasi saat ini)`
+      );
+      sessionStorage.setItem(`default-temp`, response.data.main.temp);
+      sessionStorage.setItem(`default-temp-max`, response.data.main.temp_max);
+      sessionStorage.setItem(`default-temp-min`, response.data.main.temp_min);
+      sessionStorage.setItem(
+        `default-desc`,
+        response.data.weather[0].description
+      );
+      sessionStorage.setItem(`default-humid`, response.data.main.humidity);
       setError(null);
       setLoading(false);
     } catch (error) {
@@ -84,24 +97,27 @@ export default function MainCard({ citySearched }) {
   useEffect(() => {
     // get lokasi user saat halaman pertama dirender
     getLocation();
-    setCity(citySearched);
-    setName(sessionStorage.getItem(city));
-    setTemp(sessionStorage.getItem(`${city}-temp`));
-    setTempMax(sessionStorage.getItem(`${city}-temp-max`));
-    setTempMin(sessionStorage.getItem(`${city}-temp-min`));
-    setDesc(sessionStorage.getItem(`${city}-desc`));
-    setHumidity(sessionStorage.getItem(`${city}-humid`));
-    if (city !== citySearched) {
-      setCity(citySearched);
+    if (citySaved) {
+      const lowercaseCity = citySaved.toLowerCase();
+      setCity(lowercaseCity);
+      setName(sessionStorage.getItem(`kota-${lowercaseCity}`));
+      setTemp(sessionStorage.getItem(`${lowercaseCity}-temp`));
+      setTempMax(sessionStorage.getItem(`${lowercaseCity}-temp-max`));
+      setTempMin(sessionStorage.getItem(`${lowercaseCity}-temp-min`));
+      setDesc(sessionStorage.getItem(`${lowercaseCity}-desc`));
+      setHumidity(sessionStorage.getItem(`${lowercaseCity}-humid`));
+      if (city !== lowercaseCity) {
+        setCity(lowercaseCity);
+      }
     }
-  }, [city, citySearched]);
+  }, [city, citySaved]);
 
   return (
     <div>
       {loading ? (
         <MainCardSkeleton />
       ) : (
-        <div className="row mt-4">
+        <div className="row mt-2">
           <div className="col-md">
             <div className="card d-flex align-items-center text-center p-5">
               <div className="d-inline">
@@ -116,7 +132,7 @@ export default function MainCard({ citySearched }) {
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 <img
-                  className="me-4"
+                  className="ill me-4"
                   src={weatherIcon(desc || weatherData.weather[0].description)}
                   alt="illustrasi cuaca"
                   width={200}

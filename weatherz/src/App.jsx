@@ -1,19 +1,19 @@
 import { useState } from "react";
 import MainCard from "./components/cards/MainCard";
-import WeeklyRow from "./components/cards/WeeklyRow";
+import DailyCard from "./components/cards/DailyCard";
 import Footer from "./components/section/Footer";
 import SearchBar from "./components/section/SearchBar";
 
 export default function App() {
   const [city, setCity] = useState(null);
-  const handleSearch = (city) => {
+  const handleSaved = (city) => {
     setCity(city);
   };
   return (
-    <div className="container text-center pe-5 ps-5">
-      <SearchBar searched={handleSearch} />
-      <MainCard citySearched={city} />
-      <WeeklyRow />
+    <div className="container text-center">
+      <SearchBar saved={handleSaved} />
+      <MainCard citySaved={city} />
+      <DailyCard />
       <Footer />
     </div>
   );

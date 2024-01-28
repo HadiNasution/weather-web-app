@@ -45,6 +45,29 @@ h6 {
   }
 }
 
+@media only screen and (max-width: 600px) {
+  .container {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+
+  .ill {
+    width: 40% !important;
+    height: 40% !important;
+  }
+}
+
+.container {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#daily-card,
+.card {
+  align-items: center !important;
+  text-align: center !important;
+}
+
 .card {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -56,4 +79,24 @@ h6 {
 
 .card-header {
   border-bottom: none !important;
+}
+
+.form-control {
+  background: rgba(163, 209, 255, 1) !important;
+  border: none !important;
+}
+
+.modal-dialog,
+.modal-content {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-header,
+.modal-footer {
+  border: none !important;
 }

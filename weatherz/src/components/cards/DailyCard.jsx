@@ -4,7 +4,7 @@ import { DailyCardSkeleton } from "../skeleton/CardSkeleton";
 import { weatherName } from "../../helper/weather-name";
 import { weatherIcon } from "../../helper/weather-icon";
 
-export default function WeeklyRow() {
+export default function DailyCard() {
   const [forecastData, setForecastData] = useState(null);
   const [loading, setLoading] = useState(true); // state loading data
   const [error, setError] = useState(null); // state error
@@ -88,11 +88,14 @@ export default function WeeklyRow() {
           </div>
         </div>
       ) : (
-        <div className="row mt-3 mb-5">
+        <div className="row mt-4 mb-5">
           {forecastData && Array.isArray(forecastData) ? (
             forecastData.map((day) => (
-              <div className="col-md" key={day.dt}>
-                <div className="card d-flex align-items-start text-start p-3">
+              <div className="col-md mt-2" key={day.dt}>
+                <div
+                  className="card d-flex align-items-start text-start p-3"
+                  id="daily-card"
+                >
                   <div className="d-inline">
                     <h2 className="fs-3 fw-bold">
                       {new Date(day.dt * 1000).toLocaleDateString("id-ID", {
@@ -105,7 +108,7 @@ export default function WeeklyRow() {
                   </div>
                   <div className="d-flex align-items-center justify-content-center">
                     <img
-                      className="me-4"
+                      className="ill me-4"
                       src={weatherIcon(day.weather[0].description)}
                       alt="illustrasi cuaca"
                       width={80}

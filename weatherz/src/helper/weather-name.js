@@ -9,10 +9,10 @@ export const weatherName = (name) => {
       result = "Sedikit Awan";
       break;
     case "scattered clouds":
-      result = "Awan Tersebar";
+      result = "Berawan";
       break;
     case "broken clouds":
-      result = "Awan Pecah";
+      result = "Sedikit Berawan";
       break;
     case "overcast clouds":
       result = "Langit Mendung";
