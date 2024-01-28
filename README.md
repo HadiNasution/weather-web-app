@@ -1,6 +1,6 @@
 # Weatherz
 
-A simple web application to check out the wheather in your region and your location.
+A simple web application to check out the wheather in your location and regions.
 
 ## Features
 
@@ -11,8 +11,7 @@ A simple web application to check out the wheather in your region and your locat
 ## Tech stack
 
 - ReactJS
-- Metaweather API
-- SessionStorage
+- OpenWeatherMap API
 
 ## How to use
 
