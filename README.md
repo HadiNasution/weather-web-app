@@ -15,6 +15,13 @@ A simple web application to check out the wheather in your location and regions.
 
 ## How to use
 
+1. Clone this repository
+2. Open with Text editor (VS Code)
+3. Run Terminal (bash)
+4. Change to root (run : cd weatherz)
+5. run : npm run dev
+6. make sure all required dependencies are installed
+
 ## Contribute
 
 If you want to contribute in this web app, just following this steps :
